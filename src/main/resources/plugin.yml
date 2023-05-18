@@ -1,0 +1,5 @@
+name: TurtleSchematic
+version: '1.0.0'
+main: dev.kunet.turtleschematic.TurtlePlugin
+authors: [KuNet]
+description: Load schematics like a turtle!
