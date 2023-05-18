@@ -44,3 +44,18 @@ tasks {
 kotlin {
     jvmToolchain(8)
 }
+
+
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "dev.kunet"
+            artifactId = "TurtleSchematic"
+            version = "0.0.1"
+
+            from(components["java"])
+        }
+    }
+}
+
