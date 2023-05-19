@@ -21,11 +21,7 @@ class TurtlePlugin : JavaPlugin(), Listener {
         e.player.sendMessage("sup")
         runBlocking {
             val a = now()
-            val schem = createTurtleSchematic(File("test.schematic"))
-            if (schem == null) {
-                e.player.sendMessage("broke :9")
-                return@runBlocking
-            }
+            val schem = TurtleSchematic(File("test.schematic"))
             val b = now()
             e.player.sendMessage("loaded in ${b - a}ms (fully async)")
             val inter = schem.createIntermediary(0, 1, 0)

@@ -15,6 +15,10 @@ import kotlin.coroutines.suspendCoroutine
 class TurtleSchematic(
     private val file: File,
 ) {
+    init {
+        startReading()
+    }
+
     internal val lock = ReentrantReadWriteLock()
 
     var width = 0
@@ -69,21 +73,5 @@ class TurtleSchematic(
         }
 
         return true
-    }
-}
-
-// returns null if there is an error and sits down and shuts up :)
-suspend fun createTurtleSchematic(file: File): TurtleSchematic? = withContext(Dispatchers.IO) {
-    suspendCoroutine { top ->
-        val schematic = TurtleSchematic(file)
-        runBlocking {
-            try {
-                if (!schematic.startReading()) top.resume(null)
-                top.resume(schematic)
-            } catch (exception: Exception) {
-                // absolutely mental!!!
-                top.resume(null)
-            }
-        }
     }
 }
