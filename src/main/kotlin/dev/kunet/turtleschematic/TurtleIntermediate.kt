@@ -1,7 +1,7 @@
 package dev.kunet.turtleschematic
 
 import dev.kunet.turtleschematic.nms.TurtleChunkSection
-import kotlin.concurrent.read
+import kotlinx.coroutines.sync.withLock
 
 class TurtleIntermediate {
     internal var initialized = false
@@ -23,7 +23,8 @@ class TurtleIntermediate {
         fun getSection(y: Int) = sections[y shr 4]
     }
 
-    internal fun initializeWithData(parent: TurtleSchematic, offsetX: Int, offsetY: Int, offsetZ: Int) {
+    internal suspend fun initializeWithData(parent: TurtleSchematic, offsetX: Int, offsetY: Int, offsetZ: Int) =
+        parent.mutex.withLock {
             var previousChunkX = offsetX shr 4
             var previousChunkZ = offsetZ shr 4
             var previousChunk = getIntermediateChunk(previousChunkX, previousChunkZ)

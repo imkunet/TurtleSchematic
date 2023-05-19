@@ -1,22 +1,20 @@
 package dev.kunet.turtleschematic
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import net.querz.nbt.io.NBTUtil
 import net.querz.nbt.tag.CompoundTag
 import java.io.File
 import java.io.IOException
-import java.util.concurrent.locks.ReentrantReadWriteLock
-import kotlin.concurrent.write
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class TurtleSchematic(
     private val file: File,
 ) {
+    internal val mutex: Mutex = Mutex()
+
     init {
-        startReading()
+        //runBlocking { if (!startReading()) throw IOException("wtf") }
     }
 
     var width = 0
@@ -39,35 +37,37 @@ class TurtleSchematic(
     fun totalBlocks() = width * length * height
 
     // blocking and slow function to create the interemediary
-    fun createIntermediary(offsetX: Int, offsetY: Int, offsetZ: Int): TurtleIntermediate {
+    fun createIntermediary(offsetX: Int, offsetY: Int, offsetZ: Int): TurtleIntermediate = runBlocking {
         val it = TurtleIntermediate()
-        it.initializeWithData(this, offsetX, offsetY, offsetZ)
-        return it
+        it.initializeWithData(this@TurtleSchematic, offsetX, offsetY, offsetZ)
+        return@runBlocking it
     }
 
-    internal fun startReading(): Boolean {
-        val compound: CompoundTag?
-        try {
-            println("ata")
-            compound = NBTUtil.read(file).tag as CompoundTag?
-            println("atb")
-        } catch (exception: IOException) {
-            exception.printStackTrace()
-            return false
+    fun startReading(): Boolean = runBlocking {
+        mutex.withLock {
+            val compound: CompoundTag?
+            try {
+                println("ata")
+                compound = NBTUtil.read(file).tag as CompoundTag?
+                println("atb")
+            } catch (exception: IOException) {
+                exception.printStackTrace()
+                return@runBlocking false
+            }
+
+            if (compound == null) {
+                return@runBlocking false
+            }
+
+            width = compound.getShort("Width").toInt()
+            length = compound.getShort("Length").toInt()
+            height = compound.getShort("Height").toInt()
+
+            blocks = compound.getByteArray("Blocks")
+            data = compound.getByteArray("Data")
+
+
+            return@runBlocking true
         }
-
-        if (compound == null) {
-            return false
-        }
-
-        width = compound.getShort("Width").toInt()
-        length = compound.getShort("Length").toInt()
-        height = compound.getShort("Height").toInt()
-
-        blocks = compound.getByteArray("Blocks")
-        data = compound.getByteArray("Data")
-
-
-        return true
     }
 }
