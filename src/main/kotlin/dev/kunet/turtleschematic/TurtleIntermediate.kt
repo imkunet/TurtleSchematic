@@ -23,8 +23,7 @@ class TurtleIntermediate {
         fun getSection(y: Int) = sections[y shr 4]
     }
 
-    internal fun initializeWithData(parent: TurtleSchematic, offsetX: Int, offsetY: Int, offsetZ: Int) =
-        parent.lock.read {
+    internal fun initializeWithData(parent: TurtleSchematic, offsetX: Int, offsetY: Int, offsetZ: Int) {
             var previousChunkX = offsetX shr 4
             var previousChunkZ = offsetZ shr 4
             var previousChunk = getIntermediateChunk(previousChunkX, previousChunkZ)

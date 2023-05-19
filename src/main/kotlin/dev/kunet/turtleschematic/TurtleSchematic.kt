@@ -19,8 +19,6 @@ class TurtleSchematic(
         startReading()
     }
 
-    internal val lock = ReentrantReadWriteLock()
-
     var width = 0
         private set
 
@@ -48,29 +46,27 @@ class TurtleSchematic(
     }
 
     internal fun startReading(): Boolean {
-        lock.write {
-            val compound: CompoundTag?
-            try {
-                println("ata")
-                compound = NBTUtil.read(file).tag as CompoundTag?
-                println("atb")
-            } catch (exception: IOException) {
-                exception.printStackTrace()
-                lock.writeLock().unlock()
-                return false
-            }
-
-            if (compound == null) {
-                return false
-            }
-
-            width = compound.getShort("Width").toInt()
-            length = compound.getShort("Length").toInt()
-            height = compound.getShort("Height").toInt()
-
-            blocks = compound.getByteArray("Blocks")
-            data = compound.getByteArray("Data")
+        val compound: CompoundTag?
+        try {
+            println("ata")
+            compound = NBTUtil.read(file).tag as CompoundTag?
+            println("atb")
+        } catch (exception: IOException) {
+            exception.printStackTrace()
+            return false
         }
+
+        if (compound == null) {
+            return false
+        }
+
+        width = compound.getShort("Width").toInt()
+        length = compound.getShort("Length").toInt()
+        height = compound.getShort("Height").toInt()
+
+        blocks = compound.getByteArray("Blocks")
+        data = compound.getByteArray("Data")
+
 
         return true
     }
