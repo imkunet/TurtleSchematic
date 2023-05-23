@@ -32,7 +32,7 @@ class TurtleIntermediate {
             var previousSectionY = 0
             var previousSection = previousChunk.sections[0]
 
-            println("wlh ${parent.width}x${parent.length}x${parent.height} (${parent.width * parent.length * parent.height})")
+            println("Dimensions (WxLxH): ${parent.width}x${parent.length}x${parent.height} (Volume: ${parent.width * parent.length * parent.height})")
 
             for (l in 0 until parent.length) {
                 for (w in 0 until parent.width) {

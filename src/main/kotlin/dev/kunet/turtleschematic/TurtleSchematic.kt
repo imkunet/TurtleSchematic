@@ -7,6 +7,7 @@ import net.querz.nbt.io.NBTUtil
 import net.querz.nbt.tag.CompoundTag
 import java.io.File
 import java.io.IOException
+import java.lang.Exception
 
 class TurtleSchematic(
     private val file: File,
@@ -32,6 +33,10 @@ class TurtleSchematic(
     var data = ByteArray(0)
         private set
 
+    var worldEditX: Int? = null
+    var worldEditY: Int? = null
+    var worldEditZ: Int? = null
+
     fun getBlockIndex(x: Int, y: Int, z: Int) = (y * length + z) * width + x
 
     fun totalBlocks() = width * length * height
@@ -43,13 +48,18 @@ class TurtleSchematic(
         return@runBlocking it
     }
 
+    fun createIntermediaryFromWEOrigin(x: Int, y: Int, z: Int): TurtleIntermediate {
+        return createIntermediary(worldEditX?.plus(x) ?: x, worldEditY?.plus(y) ?: y, worldEditZ?.plus(z) ?: -z)
+    }
+
     fun startReading(): Boolean = runBlocking {
         mutex.withLock {
             val compound: CompoundTag?
             try {
-                println("ata")
+                val start = now()
+                println("Reading schematic $file")
                 compound = NBTUtil.read(file).tag as CompoundTag?
-                println("atb")
+                println("Finished reading $file in ${now() - start}ms")
             } catch (exception: IOException) {
                 exception.printStackTrace()
                 return@runBlocking false
@@ -66,6 +76,14 @@ class TurtleSchematic(
             blocks = compound.getByteArray("Blocks")
             data = compound.getByteArray("Data")
 
+            try {
+                worldEditX = compound.getInt("WEOffsetX")
+                worldEditY = compound.getInt("WEOffsetY")
+                worldEditZ = compound.getInt("WEOffsetZ")
+                println("WE Offset data: ($worldEditX, $worldEditY, $worldEditZ)")
+            } catch (throwable: Exception) {
+                // nope!
+            }
 
             return@runBlocking true
         }

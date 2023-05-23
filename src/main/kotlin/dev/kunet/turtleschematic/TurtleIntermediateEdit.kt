@@ -35,10 +35,9 @@ class TurtleIntermediateEdit(private val world: World, private val intermediary:
                 val cz = unpackZ(hash)
                 val handle = getChunkHandle(cx, cz)
 
-                intermediary.intermediateChunks[hash]?.sections?.map { it.section }?.toTypedArray()?.copyInto(handle.getSections())
+                intermediary.intermediateChunks[hash]?.sections?.map { it.section }?.toTypedArray()
+                    ?.copyInto(handle.getSections())
                 nmsWorldContext.refreshChunk(cx, cz)
-                // aTa
-                //intermediary.intermediateChunks[hash]?.sections?.copyInto(handle.getSections())
             }
 
             timeSum += t
@@ -47,7 +46,7 @@ class TurtleIntermediateEdit(private val world: World, private val intermediary:
             dataChunkIndex++
 
             // if it's finished, done! if it's exceeded computation time, done!
-            if ((timeLimit > 1 && timeSum + meanTime > timeLimit) || finishedPlacing) break@prison
+            if (finishedPlacing || (timeLimit > 1 && timeSum + meanTime > timeLimit)) break@prison
         }
 
         return finishedPlacing

@@ -22,9 +22,10 @@ class TurtlePlugin : JavaPlugin(), Listener {
         runBlocking {
             val a = now()
             val schem = TurtleSchematic(File("test.schematic"))
+            schem.startReading()
             val b = now()
             e.player.sendMessage("loaded in ${b - a}ms (fully async)")
-            val inter = schem.createIntermediary(0, 1, 0)
+            val inter = schem.createIntermediaryFromWEOrigin(0, 93, 0)
             val c = now()
             e.player.sendMessage("inter in ${c - b}ms (fully async)")
             val imed = TurtleIntermediateEdit(e.player.world, inter)
