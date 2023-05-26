@@ -1,5 +1,6 @@
 package dev.kunet.turtleschematic
 
+import dev.kunet.turtleschematic.nms.TURTLE_DEBUG
 import dev.kunet.turtleschematic.nms.TurtleChunkSection
 import kotlinx.coroutines.sync.withLock
 
@@ -32,7 +33,7 @@ class TurtleIntermediate {
             var previousSectionY = 0
             var previousSection = previousChunk.sections[0]
 
-            println("Dimensions (WxLxH): ${parent.width}x${parent.length}x${parent.height} (Volume: ${parent.width * parent.length * parent.height})")
+            if (TURTLE_DEBUG) println("Dimensions (WxLxH): ${parent.width}x${parent.length}x${parent.height} (Volume: ${parent.width * parent.length * parent.height})")
 
             for (l in 0 until parent.length) {
                 for (w in 0 until parent.width) {

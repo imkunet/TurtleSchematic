@@ -1,5 +1,6 @@
 package dev.kunet.turtleschematic
 
+import dev.kunet.turtleschematic.nms.TURTLE_DEBUG
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -7,16 +8,11 @@ import net.querz.nbt.io.NBTUtil
 import net.querz.nbt.tag.CompoundTag
 import java.io.File
 import java.io.IOException
-import java.lang.Exception
 
 class TurtleSchematic(
     private val file: File,
 ) {
     internal val mutex: Mutex = Mutex()
-
-    init {
-        //runBlocking { if (!startReading()) throw IOException("wtf") }
-    }
 
     var width = 0
         private set
@@ -57,9 +53,9 @@ class TurtleSchematic(
             val compound: CompoundTag?
             try {
                 val start = now()
-                println("Reading schematic $file")
+                if (TURTLE_DEBUG) println("Reading schematic $file")
                 compound = NBTUtil.read(file).tag as CompoundTag?
-                println("Finished reading $file in ${now() - start}ms")
+                if (TURTLE_DEBUG) println("Finished reading $file in ${now() - start}ms")
             } catch (exception: IOException) {
                 exception.printStackTrace()
                 return@runBlocking false
@@ -80,7 +76,7 @@ class TurtleSchematic(
                 worldEditX = compound.getInt("WEOffsetX")
                 worldEditY = compound.getInt("WEOffsetY")
                 worldEditZ = compound.getInt("WEOffsetZ")
-                println("WE Offset data: ($worldEditX, $worldEditY, $worldEditZ)")
+                if (TURTLE_DEBUG) println("WE Offset data: ($worldEditX, $worldEditY, $worldEditZ)")
             } catch (throwable: Exception) {
                 // nope!
             }

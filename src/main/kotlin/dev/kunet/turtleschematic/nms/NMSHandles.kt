@@ -62,6 +62,8 @@ internal fun notify(worldHandle: Any, x: Int, y: Int, z: Int) {
     notify(worldHandle, createBlockPositionHandle(x, y, z))
 }
 
+internal val TURTLE_DEBUG = System.getenv("TURTLE_DEBUG").equals("true", true)
+
 fun initializeBlockHandles() {
-    println("Initializing block handles...")
+    if (TURTLE_DEBUG) println("Initializing block handles...")
 }
