@@ -13,6 +13,8 @@ class TurtlePlugin : JavaPlugin(), Listener {
         server.pluginManager.registerEvents(this, this)
     }
 
+    private var intermediate: TurtleIntermediate? = null
+
     @EventHandler
     fun awa(e: PlayerCommandPreprocessEvent) {
         if (!e.message.startsWith("/awa")) return
@@ -20,14 +22,22 @@ class TurtlePlugin : JavaPlugin(), Listener {
 
         e.player.sendMessage("sup")
         runBlocking {
-            val a = now()
-            val schem = TurtleSchematic(File("test.schematic"))
-            schem.startReading()
-            val b = now()
-            e.player.sendMessage("loaded in ${b - a}ms (fully async)")
-            val inter = schem.createIntermediaryFromWEOrigin(0, 93, 0)
+            val inter = if (intermediate == null || e.message.contains("force")) {
+                val a = now()
+                val schem = TurtleSchematic(File("test.schematic"))
+                schem.startReading()
+                val b = now()
+                e.player.sendMessage("loaded in ${b - a}ms (fully async)")
+                val inter = schem.createIntermediaryFromWEOrigin(0, 93, 0)
+                val c = now()
+                e.player.sendMessage("inter in ${c - b}ms (fully async)")
+                intermediate = inter
+                inter
+            } else {
+                intermediate!!
+            }
+
             val c = now()
-            e.player.sendMessage("inter in ${c - b}ms (fully async)")
             val imed = TurtleIntermediateEdit(e.player.world, inter)
             var i = 0
             while (!imed.poll()) {

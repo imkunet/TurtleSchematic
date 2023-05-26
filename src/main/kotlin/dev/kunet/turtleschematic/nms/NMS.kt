@@ -48,3 +48,10 @@ fun getPrivateField(type: Class<*>, field: String): MethodHandle {
 
     return lookup.unreflectGetter(declaredField)
 }
+
+fun setPrivateField(type: Class<*>, field: String): MethodHandle {
+    val declaredField = type.getDeclaredField(field)
+    declaredField.isAccessible = true
+
+    return lookup.unreflectSetter(declaredField)
+}

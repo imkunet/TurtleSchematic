@@ -1,7 +1,7 @@
 package dev.kunet.turtleschematic
 
-import dev.kunet.turtleschematic.nms.TURTLE_DEBUG
-import dev.kunet.turtleschematic.nms.TurtleChunkSection
+import dev.kunet.turtleschematic.nms.*
+import it.unimi.dsi.fastutil.ints.Int2IntArrayMap
 import kotlinx.coroutines.sync.withLock
 
 class TurtleIntermediate {
@@ -16,12 +16,32 @@ class TurtleIntermediate {
     }
 
     class TurtleIntermediateChunk {
-        // TODO: don't assume the thing is in the normal world :)
-
         // note the << 4 >> 4 is a hack to get the block y pos of the section
-        val sections = Array(16) { TurtleChunkSection(it shr 4 shl 4) }
+        val sections = Array(16) { TurtleIntermediateChunkSection(it shr 4 shl 4) }
 
         fun getSection(y: Int) = sections[y shr 4]
+    }
+
+    class TurtleIntermediateChunkSection(val yPos: Int) {
+        private var tickingBlockCounter = 0
+        private fun nonTickingBlockCount() = 4096 - tickingBlockCounter
+
+        private var blockIds = CharArray(4096)
+
+        fun setBlock(x: Int, y: Int, z: Int, c: Int) {
+            blockIds[(y and 15 shl 8) or (z and 15 shl 4) or (x and 15)] = c.toChar()
+            // assuming all set block aren't air and positions don't conflict
+            tickingBlockCounter++
+        }
+
+        fun emitChunkSection(skyLight: Boolean): Any {
+            val chunkSection = constructChunkSection(yPos, skyLight)
+            setNonEmptyBlockCount(chunkSection, nonTickingBlockCount())
+            setTickingBlockCount(chunkSection, tickingBlockCounter)
+            blockIds.copyInto(chunkSectionGetBlockIdArray(chunkSection))
+
+            return chunkSection
+        }
     }
 
     internal suspend fun initializeWithData(parent: TurtleSchematic, offsetX: Int, offsetY: Int, offsetZ: Int) =
@@ -32,6 +52,8 @@ class TurtleIntermediate {
 
             var previousSectionY = 0
             var previousSection = previousChunk.sections[0]
+
+            val blockCache = Int2IntArrayMap(16)
 
             if (TURTLE_DEBUG) println("Dimensions (WxLxH): ${parent.width}x${parent.length}x${parent.height} (Volume: ${parent.width * parent.length * parent.height})")
 
@@ -71,7 +93,15 @@ class TurtleIntermediate {
                             previousSection = currentSection
                         }
 
-                        currentSection.setBlock(x, y, z, blockId, parent.data[i].toInt())
+                        val blockData = parent.data[i].toInt()
+                        val blockKey = blockId + (blockData shl 12)
+                        var block = blockCache.getOrDefault(blockKey, Int.MIN_VALUE)
+                        if (block == Int.MIN_VALUE) {
+                            block = invokeGetRegistryId(staticBlockRegistry, getIBlockData(blockId, blockData)) as Int
+                            blockCache.put(blockKey, block)
+                        }
+
+                        currentSection.setBlock(x, y, z, block)
                     }
                 }
             }
