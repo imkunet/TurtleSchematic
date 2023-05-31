@@ -1,7 +1,6 @@
 package dev.kunet.turtleschematic
 
 import kotlinx.coroutines.runBlocking
-import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.plugin.java.JavaPlugin
@@ -15,7 +14,7 @@ class TurtlePlugin : JavaPlugin(), Listener {
 
     private var intermediate: TurtleIntermediate? = null
 
-    @EventHandler
+    //@EventHandler
     fun awa(e: PlayerCommandPreprocessEvent) {
         if (!e.message.startsWith("/awa")) return
         e.isCancelled = true
@@ -48,5 +47,16 @@ class TurtlePlugin : JavaPlugin(), Listener {
             e.player.sendMessage("placed in ${d - c}ms (BLOCKING)")
 
         }
+    }
+
+    //@EventHandler
+    fun bawa(e: PlayerCommandPreprocessEvent) {
+        if (!e.message.startsWith("/bawa")) return
+        e.isCancelled = true
+
+        e.player.sendMessage("BOOM")
+        val a = now()
+        TurtleTools.fastClearChunk(e.player.world, e.player.location.blockX shr 4, e.player.location.blockZ shr 4)
+        e.player.sendMessage("done in ${now() - a}ms")
     }
 }

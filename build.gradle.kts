@@ -14,7 +14,7 @@ repositories {
     maven("https://repo.pgm.fyi/snapshots")
     maven("https://repo.codemc.org/repository/maven-public/")
     maven("https://jitpack.io/")
-    //maven("https://repo.hpfxd.com/releases/")
+    maven("https://repo.hpfxd.com/releases/")
 }
 
 dependencies {
@@ -22,6 +22,8 @@ dependencies {
     implementation(kotlin("reflect"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation("com.github.Querz:NBT:6.1")
+    // important for some people
+    implementation("it.unimi.dsi:fastutil-core:8.5.12")
 
     compileOnly("app.ashcon:sportpaper:1.8.8-R0.1-SNAPSHOT")
     //compileOnly("com.hpfxd.pandaspigot:pandaspigot-api:1.8.8-R0.1-SNAPSHOT")
@@ -45,8 +47,6 @@ kotlin {
     jvmToolchain(8)
 }
 
-
-
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -58,4 +58,3 @@ publishing {
         }
     }
 }
-
