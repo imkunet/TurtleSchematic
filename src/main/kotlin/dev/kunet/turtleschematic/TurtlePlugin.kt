@@ -1,6 +1,7 @@
 package dev.kunet.turtleschematic
 
 import kotlinx.coroutines.runBlocking
+import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.plugin.java.JavaPlugin
@@ -14,9 +15,11 @@ class TurtlePlugin : JavaPlugin(), Listener {
 
     private var intermediate: TurtleIntermediate? = null
 
-    //@EventHandler
+    @EventHandler
     fun awa(e: PlayerCommandPreprocessEvent) {
-        if (!e.message.startsWith("/awa")) return
+        if (!e.player.isOp) return
+
+        if (!e.message.startsWith("/awa ") && !e.message.equals("/awa")) return
         e.isCancelled = true
 
         e.player.sendMessage("sup")
@@ -49,9 +52,11 @@ class TurtlePlugin : JavaPlugin(), Listener {
         }
     }
 
-    //@EventHandler
+    @EventHandler
     fun bawa(e: PlayerCommandPreprocessEvent) {
-        if (!e.message.startsWith("/bawa")) return
+        if (!e.player.isOp) return
+        if (!e.message.equals("/bawa")) return
+
         e.isCancelled = true
 
         e.player.sendMessage("BOOM")

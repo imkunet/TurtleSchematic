@@ -16,6 +16,6 @@ object TurtleTools {
         sections.copyInto(chunk.getSections())
 
         nmsWorldContext.refreshChunk(x, z)
-        nmsWorldContext.updateLightingChunk(x, z)
+        //nmsWorldContext.updateLighting(x, z)
     }
 }

@@ -15,6 +15,7 @@ internal val nmsIBlockData = getNMSClass("IBlockData")
 internal val nmsChunkSection = getNMSClass("ChunkSection")
 internal val nmsRegistryId = getNMSClass("RegistryID")
 internal val nmsBlockPosition = getNMSClass("BlockPosition")
+internal val nmsNibbleArray = getNMSClass("NibbleArray")
 
 internal val constructChunkSection = getConstructor(nmsChunkSection, int, boolean)
 internal val constructBlockPosition = getConstructor(nmsBlockPosition, int, int, int)
@@ -25,10 +26,13 @@ internal val invokeGetHandle = getMethod(craftWorld, "getHandle", nmsWorldServer
 internal val invokeRefreshChunk = getMethod(craftWorld, "refreshChunk", boolean, int, int)
 internal val invokeGetChunk = getMethod(nmsWorld, "getChunkAt", nmsChunk, int, int)
 internal val invokeUpdateLighting = getMethod(nmsWorld, "x", boolean, nmsBlockPosition)
+internal val invokeChunkUpdateLighting = getMethod(nmsChunk, "n", void)
 internal val invokeGetRegistryId = getMethod(nmsRegistryId, "b", int, Any::class.java)
 
 internal val getterChunkSections = getPrivateField(nmsChunk, "sections")
 internal val getterBlockIds = getPrivateField(nmsChunkSection, "blockIds")
+internal val getterSkylightNibbleArray = getPrivateField(nmsChunkSection, "skyLight")
+internal val getterNibbleInternalArray = getPrivateField(nmsNibbleArray, "a")
 
 internal val setNonEmptyBlockCount = setPrivateField(nmsChunkSection, "nonEmptyBlockCount")
 internal val setTickingBlockCount = setPrivateField(nmsChunkSection, "tickingBlockCount")

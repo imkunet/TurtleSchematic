@@ -2,6 +2,7 @@ package dev.kunet.turtleschematic
 
 import dev.kunet.turtleschematic.nms.TurtleChunk
 import dev.kunet.turtleschematic.nms.TurtleWorld
+import org.bukkit.Bukkit
 import org.bukkit.World
 import kotlin.system.measureTimeMillis
 
@@ -29,33 +30,57 @@ class TurtleIntermediateEdit(private val world: World, private val intermediary:
 
         prison@ while (true) {
             val t = measureTimeMillis {
-                if (dataChunkIndex >= keys.size) if (!finishedPlacing) {
+                if (!finishedPlacing && dataChunkIndex >= keys.size) {
                     finishedPlacing = true
                     dataChunkIndex = 0
-                } else finishedLighting = true
-                if (finishedLighting) return@measureTimeMillis
-
-                val hash = keys.elementAt(dataChunkIndex)
-                val cx = unpackX(hash)
-                val cz = unpackZ(hash)
-                val handle = getChunkHandle(cx, cz)
+                }
+                //if (finishedPlacing && dataChunkIndex >= intermediary.updateLightsAt.size - 2) finishedLighting = true
+                //if (finishedLighting) return@measureTimeMillis
 
                 if (!finishedPlacing) {
+                    val hash = keys.elementAt(dataChunkIndex)
+                    val cx = unpackX(hash)
+                    val cz = unpackZ(hash)
+                    val handle = getChunkHandle(cx, cz)
+
                     intermediary.intermediateChunks[hash]?.sections?.map { it.emitChunkSection(shouldSkylight) }
                         ?.toTypedArray()?.copyInto(handle.getSections())
                     nmsWorldContext.refreshChunk(cx, cz)
-                } else nmsWorldContext.updateLightingChunk(cx, cz)
+                    dataChunkIndex++
+                } else {
+                    /*nmsWorldContext.updateLighting(
+                        intermediary.updateLightsAt.getInt(dataChunkIndex),
+                        intermediary.updateLightsAt.getInt(dataChunkIndex + 1),
+                        intermediary.updateLightsAt.getInt(dataChunkIndex + 2)
+                    )*/
+                    //dataChunkIndex += 3
+                }
             }
 
             timeSum += t
             meanTime += t
             meanTime /= 2
-            dataChunkIndex++
 
             // if it's finished, done! if it's exceeded computation time, done!
-            if ((finishedPlacing && finishedLighting) || (timeLimit > 1 && timeSum + meanTime > timeLimit)) break@prison
+            if ((finishedPlacing/* && finishedLighting*/) || (timeLimit > 1 && timeSum + meanTime > timeLimit)) break@prison
         }
 
-        return (finishedPlacing && finishedLighting)
+        /*for (hash in keys) {
+            val cx = unpackX(hash)
+            val cz = unpackZ(hash)
+            val handle = getChunkHandle(cx, cz)
+            handle.refreshLighting()
+
+            /*Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().plugins[0], {
+                // DOES THIS DO ANYTHING !?
+                //println("trying again")
+                //handle.refreshLighting()
+                nmsWorldContext.refreshChunk(cx, cz)
+            }, 20 * 5)*/
+
+            nmsWorldContext.refreshChunk(cx, cz)
+        }*/
+
+        return (finishedPlacing/* && finishedLighting*/)
     }
 }

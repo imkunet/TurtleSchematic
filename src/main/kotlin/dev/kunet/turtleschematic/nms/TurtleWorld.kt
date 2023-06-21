@@ -13,7 +13,7 @@ class TurtleWorld(private val world: World) {
         invokeRefreshChunk(world, x, z)
     }
 
-    fun updateLightingChunk(x: Int, z: Int) {
-        invokeUpdateLighting(worldHandle, constructBlockPosition(x, 0, z))
+    fun updateLighting(x: Int, y: Int, z: Int) {
+        invokeUpdateLighting(worldHandle, constructBlockPosition(x, y, z))
     }
 }

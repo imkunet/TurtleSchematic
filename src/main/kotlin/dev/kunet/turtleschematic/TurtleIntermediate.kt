@@ -2,6 +2,7 @@ package dev.kunet.turtleschematic
 
 import dev.kunet.turtleschematic.nms.*
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap
+import it.unimi.dsi.fastutil.ints.IntArrayList
 import kotlinx.coroutines.sync.withLock
 
 class TurtleIntermediate {
@@ -12,6 +13,19 @@ class TurtleIntermediate {
         val hash = packXZ(x, z)
         return intermediateChunks.getOrPut(hash) {
             TurtleIntermediateChunk()
+        }
+    }
+
+    fun impregnate(emitSkylight: Boolean, surrogate: (Int, Int) -> Any) {
+        for ((hash, intermediateChunk) in intermediateChunks.entries) {
+            val x = unpackX(hash)
+            val z = unpackZ(hash)
+
+            val chunk = TurtleChunk(surrogate(x, z))
+            intermediateChunk.sections
+                .map { it.emitChunkSection(emitSkylight) }
+                .toTypedArray()
+                .copyInto(chunk.getSections())
         }
     }
 
@@ -38,6 +52,11 @@ class TurtleIntermediate {
             val chunkSection = constructChunkSection(yPos, skyLight)
             setNonEmptyBlockCount(chunkSection, nonTickingBlockCount())
             setTickingBlockCount(chunkSection, tickingBlockCounter)
+            if (skyLight) {
+                val lightNibbleArray = TurtleNibbleArray(getterSkylightNibbleArray(chunkSection))
+                val bytes = lightNibbleArray.getArray() as ByteArray
+                bytefill(bytes, 127)
+            }
             blockIds.copyInto(chunkSectionGetBlockIdArray(chunkSection))
 
             return chunkSection
