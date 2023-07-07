@@ -2,7 +2,6 @@ package dev.kunet.turtleschematic
 
 import dev.kunet.turtleschematic.nms.*
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap
-import it.unimi.dsi.fastutil.ints.IntArrayList
 import kotlinx.coroutines.sync.withLock
 
 class TurtleIntermediate {
@@ -55,7 +54,7 @@ class TurtleIntermediate {
             if (skyLight) {
                 val lightNibbleArray = TurtleNibbleArray(getterSkylightNibbleArray(chunkSection))
                 val bytes = lightNibbleArray.getArray() as ByteArray
-                bytefill(bytes, 127)
+                bytefill(bytes, (-1).toByte())
             }
             blockIds.copyInto(chunkSectionGetBlockIdArray(chunkSection))
 
