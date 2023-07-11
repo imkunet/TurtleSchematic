@@ -30,7 +30,7 @@ class TurtleIntermediate {
 
     class TurtleIntermediateChunk {
         // note the << 4 >> 4 is a hack to get the block y pos of the section
-        val sections = Array(16) { TurtleIntermediateChunkSection(it shr 4 shl 4) }
+        val sections = Array(16) { TurtleIntermediateChunkSection(it * 16) }
 
         fun getSection(y: Int) = sections[y shr 4]
     }
