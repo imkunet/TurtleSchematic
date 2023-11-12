@@ -16,4 +16,8 @@ class TurtleWorld(private val world: World) {
     fun updateLighting(x: Int, y: Int, z: Int) {
         invokeUpdateLighting(worldHandle, constructBlockPosition(x, y, z))
     }
+
+    fun notify(x: Int, y: Int, z: Int) {
+        invokeNotify(worldHandle, createBlockPositionHandle(x, y, z))
+    }
 }

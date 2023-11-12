@@ -64,4 +64,19 @@ class TurtlePlugin : JavaPlugin(), Listener {
         TurtleTools.fastClearChunk(e.player.world, e.player.location.blockX shr 4, e.player.location.blockZ shr 4)
         e.player.sendMessage("done in ${now() - a}ms")
     }
+
+    @EventHandler
+    fun cawa(e: PlayerCommandPreprocessEvent) {
+        if (!e.player.isOp) return
+        if (!e.message.equals("/cawa")) return
+
+        e.isCancelled = true
+
+        e.player.sendMessage("BOOM")
+        val a = now()
+        val view = TurtleView(e.player.world)
+        val x = e.player.location
+        view.setBlock(x.blockX, x.blockY, x.blockZ, 159, 11)
+        e.player.sendMessage("done in ${now() - a}ms")
+    }
 }

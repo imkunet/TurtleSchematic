@@ -28,6 +28,7 @@ internal val invokeGetChunk = getMethod(nmsWorld, "getChunkAt", nmsChunk, int, i
 internal val invokeUpdateLighting = getMethod(nmsWorld, "x", boolean, nmsBlockPosition)
 internal val invokeChunkUpdateLighting = getMethod(nmsChunk, "n", void)
 internal val invokeGetRegistryId = getMethod(nmsRegistryId, "b", int, Any::class.java)
+internal val invokeNotify = getMethod(nmsWorld, "notify", void, nmsBlockPosition)
 
 internal val getterChunkSections = getPrivateField(nmsChunk, "sections")
 internal val getterBlockIds = getPrivateField(nmsChunkSection, "blockIds")
@@ -45,6 +46,8 @@ internal fun getIBlockData(id: Int, data: Int) = invokeGetByCombinedId(id + (dat
 internal fun getChunkSections(chunk: Any) = getterChunkSections(chunk) as Array<Any>
 
 internal fun chunkSectionGetBlockIdArray(chunkSection: Any) = getterBlockIds(chunkSection) as CharArray
+
+internal fun createBlockPositionHandle(x: Int, y: Int, z: Int) = constructBlockPosition(x, y, z)
 
 fun initializeBlockHandles() {
     if (TURTLE_DEBUG) println("Initializing block handles...")
